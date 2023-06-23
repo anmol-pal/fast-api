@@ -1,11 +1,11 @@
 # fast-api
 Create a virtual environment
 ```
-python -m venv fastapi-env 
-source fastapi-env/bin/activate
+python -m venv blog-env 
+source blog-env/bin/activate
 ```
 
 Running the server
 ```
-uvicorn main:app --reload
+uvicorn blog.main:app --reload
 ```
