@@ -1,9 +1,8 @@
 from fastapi import FastAPI, Depends, Response, status, HTTPException
-from . import schemas
 from . import schemas, models
 from .database import engine, SessionLocal
 from sqlalchemy.orm import Session
-
+from typing import List
 
 app = FastAPI()
 
@@ -25,12 +24,12 @@ def create(request: schemas.Blog, db:Session = Depends(get_db)):
     db.refresh(new_blog)
     return new_blog
 
-@app.get('/blog')
+@app.get('/blog', response_model=List[schemas.ShowBlog])
 def get_all_blogs(db:Session = Depends(get_db)):
     blogs = db.query(models.Blog).all()
     return blogs
 
-@app.get('/blog/{id}')
+@app.get('/blog/{id}', response_model=schemas.ShowBlog)
 def get_blog_by_id(id,response:Response ,db:Session = Depends(get_db)):
     blog = db.query(models.Blog).filter(models.Blog.id == id).first()
     if not blog:
@@ -59,3 +58,13 @@ def update(id:int, request:schemas.Blog, db: Session = Depends(get_db)):
     blog.update(request.dict())
     db.commit()
     return 'updated'
+
+
+@app.post('/user')
+def create_user(request: schemas.User, db: Session = Depends(get_db)):
+    __tablename__ = 'users'
+    new_user = models.User(request.dict())
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
